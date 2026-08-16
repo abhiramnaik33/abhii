@@ -275,6 +275,62 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     document.querySelectorAll('.shots[data-shots]').forEach(build);
 })();
 
+/* ── Photo strip ─────────────────────────────────────────────────── */
+/* Probes /photos for life-1, life-2 … exactly like the project shots, so adding
+   a photo is dropping a file in the folder. The whole section stays hidden
+   until one loads, rather than leaving an empty band above the footer. */
+(function reel() {
+    const sec = document.getElementById('life');
+    const track = sec && sec.querySelector('.reel-track');
+    if (!track) return;
+
+    const EXTS = ['jpeg', 'jpg', 'png', 'webp'];
+    const MAX = 24;
+
+    const load = (src) => new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(src);
+        img.onerror = () => resolve(null);
+        img.src = src;
+    });
+
+    async function findOne(n) {
+        for (const ext of EXTS) {
+            const hit = await load(`photos/life-${n}.${ext}`);
+            if (hit) return hit;
+        }
+        return null;
+    }
+
+    (async function build() {
+        const found = [];
+        for (let n = 1; n <= MAX; n++) {
+            const src = await findOne(n);
+            if (!src) break;
+            found.push(src);
+        }
+        if (!found.length) return;
+
+        // Two identical runs — the -50% keyframe then lands on a matching frame.
+        // Without the duplicate the loop would visibly jump back to the start.
+        [...found, ...found].forEach((src, i) => {
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = '';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            // only the first run is real content; the clone is decoration
+            if (i >= found.length) img.setAttribute('aria-hidden', 'true');
+            track.appendChild(img);
+        });
+
+        // one photo cannot loop against itself — hold it still
+        if (found.length < 2) track.style.animation = 'none';
+
+        sec.hidden = false;
+    })();
+})();
+
 /* ── Console ──────────────────────────────────────────────────────────────── */
 (function console_() {
     const box = document.getElementById('term');
