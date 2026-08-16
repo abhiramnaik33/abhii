@@ -304,6 +304,11 @@
 
         <div class="work-grid">
             <article class="work-card reveal" id="p-allsafe">
+                <div class="shots" data-shots="allsafe" hidden>
+                    <div class="shots-track"></div>
+                    <div class="shots-dots" role="tablist" aria-label="Screenshots"></div>
+                </div>
+                <div class="work-body">
                 <div class="work-top">
                     <span class="work-ic"><i class="fa-solid fa-shield-halved"></i></span>
                     <span class="work-tag">Detection engineering</span>
@@ -316,11 +321,17 @@
                 </dl>
                 <div class="work-foot">
                     <span class="work-stack">Python · Flask · SQLAlchemy</span>
-                    <button class="go" data-project="allsafe" aria-label="Full breakdown of All Safe"><i class="fa-solid fa-arrow-right"></i></button>
+                    <a class="go" href="https://github.com/abhiramnaik33/allsafe_HACKMALENADU" target="_blank" rel="noopener" aria-label="All Safe on GitHub"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+                </div>
                 </div>
             </article>
 
             <article class="work-card reveal" id="p-gmleague">
+                <div class="shots" data-shots="gmleague" hidden>
+                    <div class="shots-track"></div>
+                    <div class="shots-dots" role="tablist" aria-label="Screenshots"></div>
+                </div>
+                <div class="work-body">
                 <div class="work-top">
                     <span class="work-ic"><i class="fa-solid fa-gavel"></i></span>
                     <span class="work-tag">Production web</span>
@@ -333,11 +344,17 @@
                 </dl>
                 <div class="work-foot">
                     <span class="work-stack">Python · Flask · SQLAlchemy</span>
-                    <button class="go" data-project="gmleague" aria-label="Full breakdown of GM League"><i class="fa-solid fa-arrow-right"></i></button>
+                    <a class="go" href="https://github.com/abhiramnaik33/GML-EMS" target="_blank" rel="noopener" aria-label="GM League on GitHub"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+                </div>
                 </div>
             </article>
 
             <article class="work-card reveal" id="p-cancer">
+                <div class="shots" data-shots="oscan" hidden>
+                    <div class="shots-track"></div>
+                    <div class="shots-dots" role="tablist" aria-label="Screenshots"></div>
+                </div>
+                <div class="work-body">
                 <div class="work-top">
                     <span class="work-ic"><i class="fa-solid fa-brain"></i></span>
                     <span class="work-tag">Applied machine learning</span>
@@ -350,26 +367,11 @@
                 </dl>
                 <div class="work-foot">
                     <span class="work-stack">CNN / ResNet · Flask · JS</span>
-                    <button class="go" data-project="cancer" aria-label="Full breakdown of Oral Cancer Detection"><i class="fa-solid fa-arrow-right"></i></button>
+                    <a class="go" href="https://github.com/abhiramnaik33/O-SCAN" target="_blank" rel="noopener" aria-label="Oral Cancer Detection System on GitHub"><i class="fa-brands fa-github"></i><span>GitHub</span></a>
+                </div>
                 </div>
             </article>
 
-            <article class="work-card reveal" id="p-kioptrix">
-                <div class="work-top">
-                    <span class="work-ic"><i class="fa-solid fa-user-secret"></i></span>
-                    <span class="work-tag">Offensive security</span>
-                </div>
-                <h3>Kioptrix 1.1 — Vulnerability Assessment</h3>
-                <dl class="par">
-                    <div><dt>Problem</dt><dd>You cannot build detection for behaviour you have never produced yourself.</dd></div>
-                    <div><dt>Built</dt><dd>Host discovery with ARP Scan, service and version enumeration with Nmap, web-surface assessment with Nikto — documented as a structured assessment in a controlled lab.</dd></div>
-                    <div><dt>Result</dt><dd>A complete attack-surface picture from an <b>unauthenticated start</b>.</dd></div>
-                </dl>
-                <div class="work-foot">
-                    <span class="work-stack">Nmap · Nikto · Kali Linux</span>
-                    <button class="go" data-project="kioptrix" aria-label="Full breakdown of Kioptrix assessment"><i class="fa-solid fa-arrow-right"></i></button>
-                </div>
-            </article>
         </div>
     </div>
 </section>
@@ -458,12 +460,6 @@
     </div>
 </footer>
 
-<div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true">
-    <div class="modal-panel" role="document" tabindex="-1">
-        <button class="modal-close" id="modal-close" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-        <div id="modal-body"></div>
-    </div>
-</div>
 
 <script src="script.js"></script>
 </body>

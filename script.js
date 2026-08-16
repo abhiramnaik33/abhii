@@ -1,6 +1,6 @@
 /* ==========================================================================
    ABHIRAM GIRISH NAIK — portfolio behaviour
-   Deliberately small: reveals, nav state, portrait unmask, work modal, console.
+   Deliberately small: reveals, nav state, portrait unmask, screenshots, console.
    ========================================================================== */
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -197,155 +197,82 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     });
 })();
 
-/* ── Project data ─────────────────────────────────────────────────────────── */
-const projects = {
-    allsafe: {
-        kicker: 'Detection engineering',
-        title: 'All Safe — AI-Powered SIEM',
-        stack: ['Python', 'Flask', 'SQLAlchemy', 'JavaScript'],
-        lede: 'A Security Incident &amp; Event Management platform built on the idea that detection is only useful when the response is already wired up.',
-        how: [
-            '<b>Multi-source ingestion.</b> Collects logs from several different sources and normalises them into one queryable event store.',
-            '<b>Event correlation.</b> Ties related events together, so a pattern spread across separate log streams reads as one incident instead of noise.',
-            '<b>Threat detection.</b> Surfaces potential threats out of correlated activity rather than raising an alert per raw line.',
-            '<b>Incident reporting.</b> Generates detailed reports so an analyst inherits context, not a log dump.',
-            '<b>Automated response.</b> Response actions fire automatically, shortening the gap between detection and containment.'
-        ],
-        why: [
-            'It is the system behind my published paper on integrated SIEM for real-time threat detection and log analytics in higher-education ERM systems.',
-            'I built the whole thing — ingestion, correlation logic, data layer and the analyst-facing interface.'
-        ]
-    },
+/* ── Project screenshots ───────────────────────────────────────────── */
+/* Cards pull their shots from /shots by filename — allsafe-1.png, allsafe-2.png
+   and so on. Probing means dropping a file in the folder is the whole workflow:
+   no markup to edit. The strip stays hidden until at least one image loads, so a
+   project with no screenshots shows no empty frame. */
+(function shots() {
+    const EXTS = ['png', 'jpg', 'jpeg', 'webp'];
+    const MAX = 8;                       // stop probing eventually
 
-    kioptrix: {
-        kicker: 'Offensive security',
-        title: 'Kioptrix Level 1.1',
-        stack: ['Nmap', 'Nikto', 'ARP Scan', 'Kali Linux'],
-        lede: 'A comprehensive vulnerability assessment and enumeration of the Kioptrix Level 1.1 machine, carried out end to end in a controlled lab environment.',
-        how: [
-            '<b>Host discovery.</b> Mapped the lab segment with ARP Scan to locate the live target.',
-            '<b>Service enumeration.</b> Nmap scanning to establish open ports, running services and version fingerprints.',
-            '<b>Web surface assessment.</b> Nikto sweeps against the exposed web services to enumerate misconfigurations and known-vulnerable components.',
-            '<b>Documentation.</b> Findings recorded as a structured assessment rather than loose terminal output.'
-        ],
-        why: [
-            'Produced a full picture of the target\'s attack surface from an unauthenticated starting position.',
-            'Recon and enumeration is the phase every real engagement is built on — and it is the same instinct I bring to the defensive side.'
-        ]
-    },
-
-    gmleague: {
-        kicker: 'Production web platform',
-        title: 'GM League',
-        stack: ['Python', 'Flask', 'SQLAlchemy', 'JavaScript'],
-        lede: 'A web platform that took a university tournament off spreadsheets: player and team-owner registration, plus the live bidding process that decides who ends up on which roster.',
-        how: [
-            '<b>Registration at scale.</b> Handled <b>700+ player sign-ups</b> and <b>40+ team owners</b> through a single flow.',
-            '<b>Bidding workflow.</b> Managed the auction process so owners could bid without organisers refereeing a spreadsheet.',
-            '<b>Real deployment.</b> Hosted on a college-allotted virtual machine — provisioning, deployment and uptime were mine, not a platform\'s.'
-        ],
-        why: [
-            'It ran a live event for 700+ participants. The failure mode was a room full of people, not a failing test.',
-            'End-to-end ownership: requirements from the organisers, build, deploy, and support while it mattered.'
-        ]
-    },
-
-    cancer: {
-        kicker: 'Applied machine learning',
-        title: 'Oral Cancer Detection System',
-        stack: ['CNN / ResNet', 'Flask', 'Python', 'JavaScript'],
-        lede: 'A screening application built on the belief that voice, not forms, is how most people will actually talk to computers.',
-        how: [
-            '<b>The model.</b> A CNN (ResNet) trained on <b>1000+ images</b>, reaching strong accuracy on the screening task.',
-            '<b>Two signals.</b> Patients are assessed on uploaded images <em>and</em> on habitual risk factors, not on the image alone.',
-            '<b>Doctor in the loop.</b> The app connects patients through to doctors rather than ending at a model output.',
-            '<b>Dr. Aria.</b> A multilingual virtual-doctor avatar that makes voice-based screening simple for patients who would never fill in a clinical form.'
-        ],
-        why: [
-            'It turns a model into something a non-technical patient can use — in their own language.',
-            'Covers the full pipeline: dataset, training, API, front end, and the voice layer on top.'
-        ]
-    }
-};
-
-/* ── Work modal ───────────────────────────────────────────────────────────── */
-(function modal() {
-    const el = document.getElementById('modal');
-    const body = document.getElementById('modal-body');
-    const closeBtn = document.getElementById('modal-close');
-    if (!el || !body) return;
-
-    let lastFocus = null;
-
-    function open(id) {
-        const p = projects[id];
-        if (!p) return;
-        lastFocus = document.activeElement;
-
-        body.innerHTML =
-            `<p class="m-kicker">${p.kicker}</p>` +
-            `<h3 class="m-title">${p.title}</h3>` +
-            `<p class="m-lede">${p.lede}</p>` +
-            `<div class="m-stack">${p.stack.map((s) => `<span>${s}</span>`).join('')}</div>` +
-            `<p class="m-sub">How it works</p>` +
-            `<ul class="m-list">${p.how.map((h) => `<li>${h}</li>`).join('')}</ul>` +
-            `<p class="m-sub">Why it matters</p>` +
-            `<ul class="m-list">${p.why.map((w) => `<li>${w}</li>`).join('')}</ul>`;
-
-        el.classList.add('open');
-        el.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-
-        // The panel is still visibility:hidden this tick, so focus() would be a no-op.
-        // Wait one frame for the style flush before moving focus into the dialog.
-        const panel = el.querySelector('.modal-panel');
-        requestAnimationFrame(() => (panel || closeBtn).focus());
+    function load(src) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(src);
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
     }
 
-    function close() {
-        el.classList.remove('open');
-        el.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        if (lastFocus) lastFocus.focus();
-    }
-
-    // Real <button>s, so Enter/Space keyboard activation comes for free.
-    document.querySelectorAll('.go[data-project]').forEach((btn) => {
-        btn.addEventListener('click', () => open(btn.dataset.project));
-    });
-
-    closeBtn.addEventListener('click', close);
-    el.addEventListener('click', (e) => { if (e.target === el) close(); });
-
-    window.addEventListener('keydown', (e) => {
-        if (!el.classList.contains('open')) return;
-
-        if (e.key === 'Escape') { close(); return; }
-
-        // Keep Tab inside the dialog while it is open.
-        if (e.key !== 'Tab') return;
-        const focusable = el.querySelectorAll('a[href], button, input, [tabindex]:not([tabindex="-1"])');
-        if (!focusable.length) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        // Focus drifted out of the dialog entirely — pull it back.
-        if (!el.contains(document.activeElement)) {
-            e.preventDefault();
-            first.focus();
-            return;
+    // Try each extension for one index; resolves to the first that exists.
+    async function findOne(slug, n) {
+        for (const ext of EXTS) {
+            const hit = await load(`shots/${slug}-${n}.${ext}`);
+            if (hit) return hit;
         }
+        return null;
+    }
 
-        if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
+    async function build(box) {
+        const slug = box.dataset.shots;
+        const track = box.querySelector('.shots-track');
+        const dots = box.querySelector('.shots-dots');
+        const found = [];
+
+        for (let n = 1; n <= MAX; n++) {
+            const src = await findOne(slug, n);
+            if (!src) break;             // a gap means the end of the set
+            found.push(src);
         }
-    });
+        if (!found.length) return;
 
-    window.openProject = open;
+        found.forEach((src, i) => {
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = '';                // decorative: the card text carries the meaning
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            track.appendChild(img);
+
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.setAttribute('role', 'tab');
+            dot.setAttribute('aria-label', `Screenshot ${i + 1}`);
+            dot.setAttribute('aria-selected', String(i === 0));
+            dot.addEventListener('click', () => {
+                track.scrollTo({ left: track.clientWidth * i, behavior: reduceMotion ? 'auto' : 'smooth' });
+            });
+            dots.appendChild(dot);
+        });
+
+        box.hidden = false;
+
+        // keep the dots in step with manual swipes
+        let queued = false;
+        track.addEventListener('scroll', () => {
+            if (queued) return;
+            queued = true;
+            requestAnimationFrame(() => {
+                queued = false;
+                const i = Math.round(track.scrollLeft / track.clientWidth);
+                dots.querySelectorAll('button').forEach((d, k) =>
+                    d.setAttribute('aria-selected', String(k === i)));
+            });
+        }, { passive: true });
+    }
+
+    document.querySelectorAll('.shots[data-shots]').forEach(build);
 })();
 
 /* ── Console ──────────────────────────────────────────────────────────────── */
@@ -399,24 +326,20 @@ const projects = {
         },
 
         projects: {
-            info: 'Four things I built',
+            info: 'Three things I built',
             run: () => head('Selected work') + '<ul>' +
                 '<li><em>All Safe</em> — AI-powered SIEM: multi-source log collection, event correlation, threat detection, incident reports, automated response.</li>' +
-                '<li><em>Kioptrix 1.1</em> — full vulnerability assessment and enumeration of a vulnerable host in a controlled Kali lab.</li>' +
                 '<li><em>GM League</em> — registration and live bidding platform. 700+ player sign-ups, 40+ team owners, deployed on a college VM.</li>' +
                 '<li><em>Oral Cancer Detection</em> — ResNet CNN on 1000+ images, plus Dr. Aria, a multilingual voice avatar for screening.</li>' +
-                '</ul><div class="t-note">Run <b>open allsafe</b>, <b>open kioptrix</b>, <b>open gmleague</b> or <b>open cancer</b> for the full breakdown.</div>'
+                '</ul><div class="t-note">Run <b>repos</b> for the source on GitHub.</div>'
         },
 
-        open: {
-            info: 'Open a project — e.g. open allsafe',
-            run: (a) => {
-                const k = (a[0] || '').toLowerCase();
-                if (!k) return '<span class="t-err">usage:</span> open &lt;allsafe | kioptrix | gmleague | cancer&gt;';
-                if (!projects[k]) return `<span class="t-err">no such project:</span> ${k}`;
-                setTimeout(() => window.openProject && window.openProject(k), 200);
-                return `Opening <em>${projects[k].title}</em>…`;
-            }
+        repos: {
+            info: 'GitHub links for the projects',
+            run: () => head('Source') +
+                row('all safe', '<a href="https://github.com/abhiramnaik33/allsafe_HACKMALENADU" target="_blank" rel="noopener">github.com/abhiramnaik33/allsafe_HACKMALENADU</a>') +
+                row('gm league', '<a href="https://github.com/abhiramnaik33/GML-EMS" target="_blank" rel="noopener">github.com/abhiramnaik33/GML-EMS</a>') +
+                row('o-scan', '<a href="https://github.com/abhiramnaik33/O-SCAN" target="_blank" rel="noopener">github.com/abhiramnaik33/O-SCAN</a>')
         },
 
         achievements: {
@@ -504,6 +427,7 @@ const projects = {
         skill: 'skills', stack: 'skills', tech: 'skills',
         awards: 'achievements', experience: 'achievements', wins: 'achievements',
         cv: 'resume', pdf: 'resume',
+        github: 'repos', source: 'repos', code: 'repos',
         email: 'contact', reach: 'contact',
         edu: 'education', college: 'education',
         paper: 'research', publication: 'research',

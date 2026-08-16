@@ -431,15 +431,19 @@ a { color: inherit; text-decoration: none; }
 .job-desc b { color: var(--text); font-weight: 600; }
 
 /* ── SELECTED WORK ───────────────────────────────────────────────────────── */
-.work-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.work-grid { display: grid; gap: clamp(38px, 5vw, 64px); }
 
+/* No card chrome, matching the experience rail. The screenshot is the only
+   framed element — it needs an edge, the prose does not. */
 .work-card {
-    display: flex; flex-direction: column;
-    background: var(--card); border: 1px solid var(--line);
-    border-radius: 16px; padding: 26px;
-    transition: border-color 0.3s ease, transform 0.3s var(--ease);
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: clamp(26px, 3.5vw, 48px);
+    align-items: start;
 }
-.work-card:hover { border-color: rgba(34, 197, 94, 0.45); transform: translateY(-3px); }
+/* a project with no screenshots yet gives its text the full width */
+.work-card:has(.shots[hidden]) { grid-template-columns: minmax(0, 1fr); }
+.work-body { min-width: 0; }
 
 .work-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 .work-ic {
@@ -452,6 +456,57 @@ a { color: inherit; text-decoration: none; }
     font-family: var(--mono); font-size: 0.62rem;
     letter-spacing: 0.1em; text-transform: uppercase; color: var(--dim);
 }
+
+/* Screenshot strip. Stays `hidden` until script.js finds at least one file,
+   so a project with no shots yet simply shows no empty frame. */
+.shots {
+    position: relative;
+    margin: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-2);
+}
+.shots-track {
+    display: flex;
+    scroll-snap-type: x mandatory;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.shots-track::-webkit-scrollbar { display: none; }
+
+.shots-track img {
+    flex: 0 0 100%;
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    object-fit: cover;
+    object-position: top center;   /* app screenshots carry their meaning up top */
+    scroll-snap-align: center;
+    display: block;
+}
+
+/* app screenshots are usually light, and white dots vanish on them — this
+   scrim guarantees the controls read whatever the shot looks like */
+.shots::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+    height: 46px; pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(6, 8, 6, 0.72));
+}
+.shots-dots {
+    position: absolute; left: 0; right: 0; bottom: 9px; z-index: 1;
+    display: flex; justify-content: center; gap: 6px;
+}
+/* one dot only means one screenshot — nothing to navigate */
+.shots-dots:has(button:only-child) { display: none; }
+
+.shots-dots button {
+    width: 7px; height: 7px; padding: 0;
+    border: none; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+    transition: background 0.25s ease, width 0.25s var(--ease);
+}
+.shots-dots button[aria-selected="true"] { background: var(--green); width: 18px; border-radius: 4px; }
 
 .work-card h3 {
     font-family: var(--head); font-size: 1.2rem; font-weight: 600;
@@ -480,13 +535,16 @@ a { color: inherit; text-decoration: none; }
 .work-stack { font-family: var(--mono); font-size: 0.66rem; color: var(--dim); }
 
 .go {
-    width: 36px; height: 36px; flex-shrink: 0;
-    display: grid; place-items: center; border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 15px; border-radius: 100px;
     background: var(--green); color: #06210f;
-    border: none; cursor: pointer; font-size: 0.78rem;
+    border: none; cursor: pointer;
+    font-family: var(--head); font-size: 0.78rem; font-weight: 600;
     transition: transform 0.3s var(--ease), background 0.3s ease;
 }
-.go:hover { background: var(--green-lt); transform: translateX(3px); }
+.go span { font-size: 0.78rem; }
+.go:hover { background: var(--green-lt); transform: translateY(-2px); }
 
 /* ── ROLES ───────────────────────────────────────────────────────────────── */
 
@@ -613,76 +671,6 @@ a { color: inherit; text-decoration: none; }
     letter-spacing: 0.05em; color: var(--dim);
 }
 
-/* ── MODAL ───────────────────────────────────────────────────────────────── */
-.modal {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(4, 5, 4, 0.86);
-    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-    display: flex; align-items: center; justify-content: center;
-    padding: clamp(16px, 4vw, 44px);
-    opacity: 0; visibility: hidden;
-    /* visibility flips instantly on open (so the panel is focusable at once)
-       and is delayed on close so the fade-out is still seen */
-    transition: opacity 0.32s ease, visibility 0s linear 0.32s;
-}
-.modal.open {
-    opacity: 1; visibility: visible;
-    transition: opacity 0.32s ease, visibility 0s linear 0s;
-}
-.modal-panel:focus-visible { outline: none; }
-
-.modal-panel {
-    position: relative; width: 100%; max-width: 660px;
-    max-height: 88vh; overflow-y: auto;
-    background: var(--card); border: 1px solid var(--line-2); border-radius: 18px;
-    padding: clamp(28px, 5vw, 46px);
-    transform: translateY(14px);
-    transition: transform 0.4s var(--ease);
-}
-.modal.open .modal-panel { transform: translateY(0); }
-.modal-panel::-webkit-scrollbar { width: 7px; }
-.modal-panel::-webkit-scrollbar-thumb { background: #262c26; border-radius: 8px; border: none; }
-
-.modal-close {
-    position: absolute; top: 18px; right: 18px;
-    width: 34px; height: 34px; border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05); border: 1px solid var(--line);
-    color: var(--muted); cursor: pointer;
-    transition: color 0.25s ease, border-color 0.25s ease;
-}
-.modal-close:hover { color: var(--green); border-color: var(--green); }
-
-.m-kicker {
-    font-family: var(--mono); font-size: 0.66rem;
-    letter-spacing: 0.11em; text-transform: uppercase;
-    color: var(--green); margin-bottom: 12px;
-}
-.m-title {
-    font-family: var(--head); font-size: clamp(1.4rem, 3vw, 1.95rem);
-    font-weight: 600; color: var(--white);
-    line-height: 1.18; letter-spacing: -0.02em;
-    margin-bottom: 16px; padding-right: 48px;
-}
-.m-lede { color: var(--muted); font-size: 0.95rem; margin-bottom: 26px; }
-.m-sub {
-    font-family: var(--mono); font-size: 0.66rem;
-    letter-spacing: 0.11em; text-transform: uppercase; color: var(--dim);
-    padding-bottom: 11px; border-bottom: 1px solid var(--line); margin-bottom: 16px;
-}
-.m-list { list-style: none; margin-bottom: 30px; }
-.m-list li {
-    position: relative; padding-left: 22px; margin-bottom: 11px;
-    font-size: 0.9rem; color: var(--muted);
-}
-.m-list li::before { content: '▸'; position: absolute; left: 0; color: var(--green); }
-.m-list b { font-weight: 600; color: var(--white); }
-.m-list:last-child { margin-bottom: 0; }
-.m-stack { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
-.m-stack span {
-    font-family: var(--mono); font-size: 0.66rem; color: var(--muted);
-    border: 1px solid var(--line-2); border-radius: 100px; padding: 4px 12px;
-}
-
 /* ── REVEAL ──────────────────────────────────────────────────────────────── */
 /* Scoped to .js so the page is fully visible if scripts never run. */
 .js .reveal {
@@ -711,7 +699,8 @@ a { color: inherit; text-decoration: none; }
     .hero-left .tick { margin-bottom: 14px; }
     .portrait { width: min(300px, 66vw); }
 
-    .work-grid { grid-template-columns: 1fr; }
+    /* stack the screenshot above the prose once the columns get thin */
+    .work-card { grid-template-columns: minmax(0, 1fr); }
     /* the split stops working once the detail column is under ~300px */
     .job { grid-template-columns: minmax(0, 1fr); gap: 18px; }
     .job .par > div:first-child { border-top: 1px solid var(--line); padding-top: 11px; }
@@ -752,8 +741,8 @@ a { color: inherit; text-decoration: none; }
 
     html, body { background: #fff !important; color: #000 !important; }
 
-    .pillbar, .term, .modal, .hero-matrix,
-    .go, .toolbelt, .climb-rider { display: none !important; }
+    .pillbar, .term, .hero-matrix,
+    .go, .toolbelt, .climb-rider, .shots { display: none !important; }
 
     .wrap, .hero-inner { max-width: 100%; padding: 0 12mm; }
     .section { padding: 10mm 0; }
@@ -772,21 +761,22 @@ a { color: inherit; text-decoration: none; }
     .about-copy em { color: #000 !important; }
 
     .type-lg, .hero-role, .sec-h, .about-copy p, .job h3,
-    .work-card h3, .contact-h, .m-title, .m-list b { color: #000 !important; }
+    .work-card h3, .contact-h { color: #000 !important; }
 
     .sec-sub, .par dd, .contact-sub, .job-desc,
-    .proof-i span, .m-lede, .tool { color: #222 !important; }
+    .proof-i span, .tool { color: #222 !important; }
     .job-desc b { color: #000 !important; }
 
     .type-sm, .work-tag, .work-stack, .par dt,
     .job-org, .job-when,
-    .proof-i strong, .m-sub, .m-kicker { color: #444 !important; }
+    .proof-i strong { color: #444 !important; }
 
     .proof, .proof-i { border-color: #bbb !important; }
 
     .climb-step { break-inside: avoid; page-break-inside: avoid; }
 
-    .work-card, .social {
+    .work-card { break-inside: avoid; page-break-inside: avoid; }
+    .social {
         background: #fff !important;
         border-color: #bbb !important;
         break-inside: avoid; page-break-inside: avoid;
