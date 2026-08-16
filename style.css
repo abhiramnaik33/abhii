@@ -267,23 +267,49 @@ a { color: inherit; text-decoration: none; }
 }
 .sec-sub { font-size: 0.9rem; color: var(--muted); margin-bottom: 34px; }
 
-/* ── WHO AM I ────────────────────────────────────────────────────────────── */
-.about-copy { max-width: 74ch; margin-top: 30px; }
 
-.about-lead {
-    font-family: var(--head);
-    font-size: clamp(1.15rem, 2.1vw, 1.6rem);
-    font-weight: 400; line-height: 1.45;
-    letter-spacing: -0.015em;
-    color: var(--white);
-    margin-bottom: 22px;
+/* ── WHO AM I ────────────────────────────────────────────────────────────────
+   One uniform block: every paragraph shares the same type, measure, colour and
+   rhythm — no per-paragraph treatment. Presence comes from the panel and the
+   display type, not from making one line different.
+   -------------------------------------------------------------------------- */
+/* Full-width panel, paragraphs in a single top-to-bottom flow. The type is
+   sized up so the lines actually reach the right edge instead of leaving a
+   dead strip there — no measure cap, the panel width sets the line length. */
+.about-copy {
+    position: relative;
+    display: grid;
+    gap: clamp(18px, 2.2vw, 26px);
+    margin-top: clamp(26px, 3vw, 34px);
+    padding: clamp(28px, 3.2vw, 40px) clamp(30px, 3.4vw, 44px);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--green);
+    border-radius: 0 14px 14px 0;
+    background:
+        radial-gradient(130% 120% at 0% 0%, rgba(34, 197, 94, 0.1), transparent 60%),
+        var(--card);
+    overflow: hidden;
+}
+/* faint scanline texture — reads as depth, never as something to look at */
+.about-copy::before {
+    content: ''; position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+        180deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 4px);
+    pointer-events: none;
 }
 
-.about-copy p { color: var(--muted); font-size: 0.95rem; margin-bottom: 16px; }
-.about-copy p:last-child { margin-bottom: 0; }
+/* No max-width — the line runs the full width of the panel. The grid gap
+   supplies the rhythm, so there is no per-paragraph margin to keep in sync. */
+.about-copy p {
+    position: relative;
+    font-family: var(--head);
+    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+    font-weight: 400; line-height: 1.6;
+    letter-spacing: -0.015em;
+    color: var(--white);
+    margin: 0;
+}
 .about-copy em { font-style: normal; color: var(--green-lt); }
-
-/* statement */
 
 /* proof strip */
 .proof {
@@ -305,41 +331,104 @@ a { color: inherit; text-decoration: none; }
 
 /* ── QUICK FACTS ─────────────────────────────────────────────────────────── */
 
-/* ── WHAT I DO ───────────────────────────────────────────────────────────── */
-.do-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-
-.do-card {
-    display: flex; align-items: center; gap: 16px;
-    padding: 14px;
-    background: var(--card); border: 1px solid var(--line);
-    border-radius: 12px;
-    transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s var(--ease);
+/* ── WHAT I DO ─ EXPERIENCE ─────────────────────────────────────────
+   Deliberately built from the same parts as "selected work" — .work-ic, .work-tag,
+   .par and .work-stack are reused, not re-declared. Two sections that sit next to
+   each other should not invent two vocabularies.
+   -------------------------------------------------------------------------- */
+/* One rail down the left with a node per role — the rail is the navigation,
+   the cards are the content. Newest first, so the page opens on "now". */
+.climb {
+    list-style: none;
+    position: relative;
+    padding-left: 34px;
 }
-.do-card:hover { border-color: var(--green); background: var(--card-2); transform: translateY(-3px); }
-
-.do-th {
-    width: 62px; height: 52px; flex-shrink: 0;
-    display: grid; place-items: center;
-    border-radius: 8px;
-    background: linear-gradient(150deg, rgba(34, 197, 94, 0.22), rgba(34, 197, 94, 0.05));
-    border: 1px solid rgba(34, 197, 94, 0.22);
-    color: var(--green-lt); font-size: 1.1rem;
-}
-
-.do-label {
-    flex: 1;
-    font-family: var(--head); font-size: 0.78rem; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.03em;
-    color: var(--white); line-height: 1.35;
+/* the rail stops at the last node instead of running past it */
+.climb::before {
+    content: '';
+    position: absolute;
+    left: 5px; top: 11px; bottom: 11px;
+    width: 1px;
+    background: linear-gradient(180deg,
+        var(--green) 0, var(--line-2) 16%, var(--line) 100%);
 }
 
-.do-go {
-    width: 32px; height: 32px; flex-shrink: 0;
-    display: grid; place-items: center; border-radius: 50%;
-    background: var(--green); color: #06210f; font-size: 0.72rem;
-    transition: transform 0.3s var(--ease);
+.climb-step { position: relative; margin-top: 30px; }
+.climb-step:first-child { margin-top: 0; }
+
+/* the node — sits on the rail, level with the role title's first line */
+.climb-step::before {
+    content: '';
+    position: absolute;
+    left: -34px; top: 6px;
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--line-2);
+    transition: border-color 0.3s ease, background 0.3s ease;
 }
-.do-card:hover .do-go { transform: translateX(3px); }
+.climb-step:hover::before { border-color: var(--green); }
+.climb-now::before { border-color: var(--green); background: var(--green); }
+
+/* The site's own avatar rides the rail, parking on whichever role is in view.
+   Positioned from .climb's padding box, so `left` lines up with the rail at 5px
+   and the node dots at 0..11px. JS only sets translateY. */
+.climb-rider {
+    position: absolute;
+    left: -11px; top: 0;
+    z-index: 2;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--green);
+    padding: 2px;
+    /* the source is 64px being drawn at ~30px — smoothing beats `pixelated`,
+       which drops every other row on a downscale and aliases the sprite */
+    object-fit: contain;
+    box-shadow: 0 0 0 4px var(--bg), 0 0 16px rgba(34, 197, 94, 0.35);
+    transform: translateY(20px);
+    transition: transform 0.5s var(--ease);
+    pointer-events: none;
+}
+
+/* the role the rider is parked on — with no card to outline, the cue moves to
+   the text itself rather than a border */
+.climb-step.is-active .job h3 { color: var(--white); }
+.climb-step.is-active .job-desc { color: var(--text); }
+.climb-step.is-active::before { border-color: var(--green); }
+
+/* No card chrome — the rail already groups these, so a border and background
+   around each one is decoration on top of structure that already exists. */
+.job { padding: 2px 0 4px; }
+
+.job-head {
+    display: flex; align-items: baseline;
+    justify-content: space-between; gap: 8px 20px;
+    flex-wrap: wrap;
+}
+.job h3 {
+    font-family: var(--head); font-size: 1.08rem; font-weight: 600;
+    color: var(--white); letter-spacing: -0.015em; line-height: 1.3;
+}
+.job h3 span { color: var(--dim); opacity: 0.55; font-weight: 400; }
+
+.job-when {
+    font-family: var(--mono); font-size: 0.72rem;
+    color: var(--dim); white-space: nowrap;
+}
+.climb-now .job-when { color: var(--green); }
+
+.job-org {
+    font-family: var(--head); font-size: 0.85rem; font-weight: 500;
+    color: var(--green-lt); margin-top: 4px;
+}
+.job-org span { color: var(--dim); opacity: 0.55; }
+
+.job-desc {
+    max-width: 72ch;
+    font-size: 0.9rem; line-height: 1.65;
+    color: var(--muted); margin-top: 10px;
+}
+.job-desc b { color: var(--text); font-weight: 600; }
 
 /* ── SELECTED WORK ───────────────────────────────────────────────────────── */
 .work-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
@@ -400,18 +489,6 @@ a { color: inherit; text-decoration: none; }
 .go:hover { background: var(--green-lt); transform: translateX(3px); }
 
 /* ── ROLES ───────────────────────────────────────────────────────────────── */
-
-.role {
-    display: grid; grid-template-columns: 300px minmax(0, 1fr);
-    gap: 30px; align-items: start;
-    padding: 22px 24px;
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    transition: border-color 0.3s ease;
-}
-.role:hover { border-color: rgba(34, 197, 94, 0.35); }
-
-.role p { font-size: 0.9rem; color: var(--muted); }
-.role p b { color: var(--white); font-weight: 600; }
 
 /* ── CREDENTIALS ─────────────────────────────────────────────────────────── */
 
@@ -614,11 +691,11 @@ a { color: inherit; text-decoration: none; }
 
 /* ── RESPONSIVE ──────────────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
-    .do-grid { grid-template-columns: repeat(2, 1fr); }
+    /* the note column is the first thing to go — it is the least load-bearing */
     .proof { grid-template-columns: repeat(3, 1fr); }
     .proof-i:nth-child(3n) { border-right: none; }
     .proof-i:nth-child(-n+3) { border-bottom: 1px solid var(--line); }
-    .role { grid-template-columns: 240px minmax(0, 1fr); gap: 22px; }
+    .job { grid-template-columns: 230px minmax(0, 1fr); gap: 26px; }
 }
 
 @media (max-width: 900px) {
@@ -633,13 +710,21 @@ a { color: inherit; text-decoration: none; }
     .portrait { width: min(300px, 66vw); }
 
     .work-grid { grid-template-columns: 1fr; }
-    .role { grid-template-columns: 1fr; gap: 12px; }
+    /* the split stops working once the detail column is under ~300px */
+    .job { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+    .job .par > div:first-child { border-top: 1px solid var(--line); padding-top: 11px; }
+
+    /* the rail costs 34px of a 420px screen — drop it, keep the cards */
+    .climb { padding-left: 0; }
+    .climb::before, .climb-step::before, .climb-rider { display: none; }
+
 }
 
 @media (max-width: 620px) {
     .tick { width: 70px; }
     .portrait { width: min(265px, 70vw); }
-    .do-grid { grid-template-columns: 1fr; }
+    .about-copy { padding: 24px 20px; }
+
     .proof { grid-template-columns: repeat(2, 1fr); }
     .proof-i { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
     .proof-i:nth-child(2n) { border-right: none; }
@@ -666,17 +751,45 @@ a { color: inherit; text-decoration: none; }
     html, body { background: #fff !important; color: #000 !important; }
 
     .pillbar, .term, .modal, .hero-matrix,
-    .go, .do-go, .toolbelt { display: none !important; }
+    .go, .toolbelt, .climb-rider { display: none !important; }
 
     .wrap, .hero-inner { max-width: 100%; padding: 0 12mm; }
     .section { padding: 10mm 0; }
 
     .tick { background: #000 !important; }
 
-    .proof { border-color: #bbb !important; }
-    .proof-i { border-color: #bbb !important; }
+    /* `body { color }` only reaches inherited text — anything with its own
+       colour keeps var(--white) and prints white-on-white. Set it explicitly. */
+    /* the scanline overlay would print as a solid grey block */
+    .about-copy::before { display: none !important; }
+    .about-copy {
+        background: none !important;
+        border-color: #bbb !important; border-left-color: #444 !important;
+        break-inside: avoid; page-break-inside: avoid;
+    }
+    .about-copy em { color: #000 !important; }
 
-    .do-th { background: #eee !important; border-color: #bbb !important; color: #000 !important; }
+    .type-lg, .hero-role, .sec-h, .about-copy p, .job h3,
+    .work-card h3, .contact-h, .m-title, .m-list b { color: #000 !important; }
+
+    .sec-sub, .par dd, .contact-sub, .job-desc,
+    .proof-i span, .m-lede, .tool { color: #222 !important; }
+    .job-desc b { color: #000 !important; }
+
+    .type-sm, .work-tag, .work-stack, .par dt,
+    .job-org, .job-when,
+    .proof-i strong, .m-sub, .m-kicker { color: #444 !important; }
+
+    .proof, .proof-i { border-color: #bbb !important; }
+
+    .climb-step { break-inside: avoid; page-break-inside: avoid; }
+
+    .work-card, .social {
+        background: #fff !important;
+        border-color: #bbb !important;
+        break-inside: avoid; page-break-inside: avoid;
+    }
+
     .work-ic { background: #eee !important; border-color: #bbb !important; color: #000 !important; }
 
     .btn-big { background: #fff !important; color: #000 !important; border: 1px solid #000; }

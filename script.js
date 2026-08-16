@@ -46,29 +46,50 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     onScroll();
 })();
 
-/* ── "What I do" cards jump to the matching project card ──────────────────── */
-(function jumps() {
-    const behavior = reduceMotion ? 'auto' : 'smooth';
+/* ── Experience rail: the avatar rides down to whichever role is in view ──── */
+(function climbRider() {
+    const climb = document.querySelector('.climb');
+    if (!climb) return;
 
-    document.querySelectorAll('.do-card[data-jump]').forEach((card) => {
-        card.addEventListener('click', (e) => {
-            const target = document.getElementById('p-' + card.dataset.jump);
-            if (!target) return;
-            e.preventDefault();
-            target.scrollIntoView({ behavior, block: 'center' });
-        });
-    });
+    const rider = climb.querySelector('.climb-rider');
+    const steps = Array.from(climb.querySelectorAll('.climb-step'));
+    if (!rider || !steps.length) return;
 
-    // Cards with no project of their own answer through the console instead.
-    document.querySelectorAll('.do-card[data-cmd]').forEach((card) => {
-        card.addEventListener('click', (e) => {
-            const term = document.getElementById('term');
-            if (!term || !window.runConsole) return;
-            e.preventDefault();
-            term.scrollIntoView({ behavior, block: 'center' });
-            setTimeout(() => window.runConsole(card.dataset.cmd), reduceMotion ? 0 : 600);
+    // Must match .climb-step::before in the stylesheet: node at top:6px, 11px tall.
+    const NODE_TOP = 6;
+    const NODE_HALF = 5.5;
+    const RIDER_HALF = 17;
+
+    let queued = false;
+
+    function place() {
+        queued = false;
+
+        // the last node whose card has crossed the reading line wins
+        const line = window.innerHeight * 0.42;
+        let active = 0;
+        steps.forEach((step, i) => {
+            if (step.getBoundingClientRect().top <= line) active = i;
         });
-    });
+
+        // offsetTop is relative to .climb, which is position:relative
+        const y = steps[active].offsetTop + NODE_TOP + NODE_HALF - RIDER_HALF;
+        rider.style.transform = 'translateY(' + y + 'px)';
+
+        steps.forEach((step, i) => step.classList.toggle('is-active', i === active));
+    }
+
+    function onScroll() {
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(place);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    // fonts change card heights, so re-measure once they land
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
+    place();
 })();
 
 /* ── Portrait: hover on pointer devices, tap on touch ─────────────────────── */
@@ -358,12 +379,12 @@ const projects = {
             info: 'The short version',
             run: () => head('Identity') +
                 row('name', 'Abhiram Girish Naik') +
-                row('focus', 'Cyber security · full-stack development') +
+                row('focus', 'AI × cyber security · full-stack development') +
                 row('based', 'Davanagere, Karnataka, India') +
-                row('graduating', '2027 — GM University') +
+                row('graduating', '2027 — GM University, final year B.Tech') +
                 row('cgpa', '9.5+') +
                 row('status', 'Open to security &amp; engineering roles') +
-                '<div class="t-note">I work both sides of the line: I have enumerated and assessed vulnerable hosts in the lab, and I have built the SIEM that catches that behaviour. In between I ship full-stack products real people use.</div>'
+                '<div class="t-note">It started with cheat codes — wanting to know what the game was actually made of. Same instinct now, better tools: I have enumerated and assessed vulnerable hosts in the lab, and I have built the SIEM that catches that behaviour. In between I ship full-stack products real people use.</div>'
         },
 
         skills: {
