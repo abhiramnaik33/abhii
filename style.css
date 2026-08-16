@@ -589,6 +589,8 @@ a { color: inherit; text-decoration: none; }
 }
 .soc:hover { background: var(--green-soft); transform: translateY(-3px); }
 .soc i { font-size: 1.25rem; color: var(--green); }
+/* the two inline-SVG marks sit on the same optical line as the icon-font ones */
+.soc svg { width: 21px; height: 21px; fill: var(--green); display: block; }
 .soc span { font-size: 0.7rem; color: var(--muted); }
 .soc:hover span { color: var(--white); }
 
@@ -794,6 +796,7 @@ a { color: inherit; text-decoration: none; }
 
     .btn-big { background: #fff !important; color: #000 !important; border: 1px solid #000; }
     .soc i { color: #000 !important; }
+    .soc svg { fill: #000 !important; }
     .soc span { color: #000 !important; }
 
     /* icons alone say nothing on paper — print the actual destination */
