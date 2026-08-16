@@ -307,7 +307,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
             run: () => head('Identity') +
                 row('name', 'Abhiram Girish Naik') +
                 row('focus', 'AI × cyber security · full-stack development') +
-                row('based', 'Davanagere, Karnataka, India') +
+                row('based', 'Bengaluru South, Karnataka, India') +
                 row('graduating', '2027 — GM University, final year B.Tech') +
                 row('cgpa', '9.5+') +
                 row('status', 'Open to security &amp; engineering roles') +
