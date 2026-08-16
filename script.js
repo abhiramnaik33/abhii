@@ -55,8 +55,8 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
     const steps = Array.from(climb.querySelectorAll('.climb-step'));
     if (!rider || !steps.length) return;
 
-    // Must match .climb-step::before in the stylesheet: node at top:26px, 11px tall.
-    const NODE_TOP = 26;
+    // Must match .climb-step::before in the stylesheet: node at top:6px, 11px tall.
+    const NODE_TOP = 6;
     const NODE_HALF = 5.5;
     const RIDER_HALF = 17;
 
